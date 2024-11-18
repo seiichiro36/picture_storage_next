@@ -1,0 +1,43 @@
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import Link from 'next/link'
+
+import React from 'react'
+
+const Header = () => {
+  return (
+    <div>
+<header className='h-56 bg-gray-700 w-full border-b-4 border-primary'>
+<div className='flex justify-between items-center'>
+  <div>
+    <div className='pl-20 pt-3' > 
+    <Link href="/mypage">
+        <img src="./test_data/test_3.png" className='w-36 h-36 rounded-full  mb-4' alt="" />
+    </Link>
+    <div className='flex items-center space-x-4'>
+
+        <Input className='w-40'/>
+
+      <Button>検索</Button>
+    </div>
+    </div>
+  </div>
+  <div className='outline-none'>
+  <img src="./test_data/test_1.png" className="w-40" />
+  </div>
+  <div className='flex flex-col items-center ml-[120px]'>
+    <Link href="/login">
+      <Button className='mt-5 mr-10  w-32'>サインアウト</Button>
+    </Link>
+    <Link href="/posts/new">
+     <Button className='mt-10 mr-10 w-32'>投稿</Button>
+    </Link>
+  </div>
+</div>
+
+</header>
+    </div>
+  )
+}
+
+export default Header
