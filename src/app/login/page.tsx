@@ -1,16 +1,18 @@
 import React from 'react'
-import LoginForm from "@/componentsPage/LoginForm"
+import LoginForm from "@/components/LoginForm"
 
 const LoginPage = () => {
   return (
-    <div>
-        <div className='bg-gradient-to-b from-zinc-200 to-zinc-300 h-screen'>
-            <div className='text-2xl font-bold p-4'>LoginPage</div>
+
+      <div>
+        <div className='flex justify-center pt-20 bg-gradient-to-b from-zinc-50 to-zinc-100 h-screen'>
+          <div>
                     <div className='w-full max-w-2xl mx-auto'>
                         <LoginForm  className="w-full"/>
                     </div>
+          </div>
         </div>
-    </div>
+      </div>
   )
 }
 

@@ -1,3 +1,4 @@
+import Header from "@/components/Header";
 
 
 const PostLayout =  ({
@@ -7,6 +8,7 @@ const PostLayout =  ({
   }>) => {
   return (
     <div>
+      <Header />
       <div>{children}</div>
     </div>
   )
