@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/_components/ui/button"
 import {
   Form,
   FormControl,
@@ -13,8 +13,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "@/_components/ui/form"
+import { Input } from "@/_components/ui/input"
 import React from "react"
 import { GoogleAuthProvider, signInWithPopup, User } from "firebase/auth"
 import auth from "@/firebase"
@@ -65,14 +65,22 @@ export default function ProfileForm({className}: LoginFormProps){
       console.log("Sign in successful: ", user);
 
       console.log(user.displayName);
+      console.log("uid：", user.uid);
+      
 
 
-      setDisplayName(user.displayName)
+      // setDisplayName(user.displayName)
       
 
       console.log("User data saved successfully");
-      
-      router.push("/posts")
+
+      // console.log(await checkUserExistance())
+
+      // if (await checkUserExistance()) {
+      //   router.push("/posts")
+      // } else {
+      //   router.push("/newresi")
+      // }
 
     } catch (error) {
       console.error("Sign in Failed:", error);
@@ -89,23 +97,23 @@ export default function ProfileForm({className}: LoginFormProps){
   return (
     <div className="bg-white-500 border  w-[1200px] px-10 pt-5 pb-5 max-w-md mx-auto">
     <Form {...form}>
-        <div className='text-2xl font-bold  text-center'>Sign Up or Log In</div>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <div className='text-2xl font-bold  text-center mb-10'>サインイン or ログイン</div>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
         <FormField
           control={form.control}
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>メールアドレス</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder="hogehoge@hoge.hoge" {...field} />
               </FormControl>
               <FormDescription>
-                This is your public display name.
+              {/* Please enter your email address for new registration */}
+              新しく登録するためのメールアドレスを入力してください
               </FormDescription>
               <FormMessage />
             </FormItem>
-            
           )}
         />
         <FormField
@@ -113,34 +121,31 @@ export default function ProfileForm({className}: LoginFormProps){
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>パスワード</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input placeholder="HogehogE" {...field} />
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
               <FormMessage />
             </FormItem>
             
           )}
         />
-        <Button type="submit" className="flex">Submit</Button>
+        <Button type="submit" className="block w-full">Submit</Button>
         </form>
         </Form>
         <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 mt-10">
         <FormField
           control={form.control}
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>メールアドレス</FormLabel>
               <FormControl>
                 <Input placeholder="shadcn" {...field} />
               </FormControl>
               <FormDescription>
-                This is your public display name.
+                登録済の場合はこちら入力してください
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -152,19 +157,16 @@ export default function ProfileForm({className}: LoginFormProps){
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>パスワード</FormLabel>
               <FormControl>
                 <Input placeholder="shadcn" {...field} />
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
               <FormMessage />
             </FormItem>
             
           )}
         />
-        <Button type="submit" className="flex">Submit</Button>
+        <Button type="submit" className="block w-full">Submit</Button>
         </form>
         </Form>
         <div>

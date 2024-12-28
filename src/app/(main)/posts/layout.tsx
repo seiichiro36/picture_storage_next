@@ -1,4 +1,4 @@
-import Header from "@/components/Header";
+import Header from "@/_components/Header";
 
 
 const PostLayout =  ({
@@ -8,8 +8,10 @@ const PostLayout =  ({
   }>) => {
   return (
     <div>
-      <Header />
-      <div>{children}</div>
+      <div className="fixed z-10 w-full">
+       <Header />
+      </div>
+      <div className="pt-20">{children}</div>
     </div>
   )
 }

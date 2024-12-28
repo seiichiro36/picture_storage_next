@@ -15,26 +15,6 @@ const imagePath = [
 
 const ItemList = () => {
   return (
-//   <div className="">
-//   <div 
-//     className="columns-1 md:columns-2 lg:columns-3"
-//   >
-//     {imagePath.map((image, index) => (
-//       <div 
-//         key={index} 
-//         className="break-inside-avoid mb-4 relative overflow-hidden"
-//       >
-//         <img
-//           src={`./test_data/${image}`}
-//           className="w-full h-auto object-cover"
-//           loading="lazy"
-//         />
-//         <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/50 to-transparent">
-//         </div>
-//       </div>
-//     ))}
-//   </div>
-// </div>
 <div>
   <div 
     className="columns-1 md:columns-2 lg:columns-3 gap-0"
@@ -45,7 +25,6 @@ const ItemList = () => {
         key={index} 
         className="break-inside-avoid relative overflow-hidden"
         > 
-
         <img
           src={`./test_data/${image}`}
           className="w-full h-auto object-cover"

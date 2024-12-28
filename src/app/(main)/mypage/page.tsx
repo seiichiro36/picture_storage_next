@@ -1,4 +1,4 @@
-import ItemList from '@/components/ItemList'
+import ItemList from '@/_components/ItemList'
 import React from 'react'
 
 const Mypage = () => {
