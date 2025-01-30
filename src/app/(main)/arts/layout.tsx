@@ -8,9 +8,7 @@ const PostLayout =  ({
   }>) => {
   return (
     <div>
-      <div className="fixed z-10 w-full">
-       <Header />
-      </div>
+      <Header />
       <div className="pt-20">{children}</div>
     </div>
   )

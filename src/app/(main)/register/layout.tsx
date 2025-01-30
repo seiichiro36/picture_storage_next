@@ -6,7 +6,7 @@ const InitResisterLayout = ({
     children: React.ReactNode;
   }>)  => {
   return (
-   <div>{children}</div>
+   <div className='pt-10'>{children}</div>
   )
 }
 

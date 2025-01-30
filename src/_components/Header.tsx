@@ -22,9 +22,6 @@ const Header = () => {
 <div className='flex justify-between items-center'>
   <div>
     <div className='pl-20 pt-3' > 
-    <Link href="/mypage">
-        <img src="./test_data/test_3.png" className='w-36 h-36 rounded-full  mb-4' alt="" />
-    </Link>
     <div className='flex items-center space-x-4'>
 
         <Input className='w-40'/>
@@ -34,7 +31,6 @@ const Header = () => {
     </div>
   </div>
   <div className='outline-none'>
-  <img src="./test_data/test_1.png" className="w-40" />
   </div>
   <div className='flex flex-col items-center ml-[120px]'>
     <Link href="/login">

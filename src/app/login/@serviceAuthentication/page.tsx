@@ -18,13 +18,12 @@ import { Input } from "@/_components/ui/input"
 import React from "react"
 import { GoogleAuthProvider, signInWithPopup, User } from "firebase/auth"
 import auth, { checkUserWhetherIsExist } from "@/firebase"
-import { displayNameAtom, emailAtom, passwordAtom } from "@/basic/atom"
+import { displayNameAtom } from "@/basic/atom"
 import { useAtom } from "jotai"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 import { LgoinUserProp } from "@/_Props/Login"
-import { setSourceMapsEnabled } from "process"
 
 const formSchema = z.object({
   email: z
@@ -50,8 +49,8 @@ export default function ProfileForm({ className }: LoginFormProps) {
   const router = useRouter()
 
   const [displayname, setDisplayName] = useAtom(displayNameAtom)
-  const [email, setEmail] = useAtom(emailAtom)
-  const [passwored, setPassword] = useAtom(passwordAtom)
+  const [email, setEmail] = useAtom(displayNameAtom)
+  const [passwored, setPassword] = useAtom(displayNameAtom)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -64,11 +63,9 @@ export default function ProfileForm({ className }: LoginFormProps) {
   function onSubmit(values: z.infer<typeof formSchema>) {
 
     console.log(values.email, values.password);
-
-    setEmail(values.email)
-    setPassword(values.password)
     
     router.push("/register")
+    // handleLogin({ email: values.email, password: values.password })
   }
 
   const handleLogin = async ({ email, password }: LgoinUserProp) => {
@@ -79,46 +76,8 @@ export default function ProfileForm({ className }: LoginFormProps) {
 
 
   return (
-    <div className="bg-white-500 w-[1200px] max-w-md mx-auto">
-      <Form {...form}>
-        {email}
-        <div className='text-2xl font-bold  text-center mb-4'>サインイン</div>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>              
-                  <p className="text-sm">
-                    新規登録に使用したいメールアドレスを入力してください
-                  </p>
-                  </FormLabel>
-                <FormControl>
-                  <Input placeholder="hogehoge@hoge.hoge" {...field} />
-                </FormControl>
-                <FormMessage className="text-red-600" />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>パスワード</FormLabel>
-                <FormControl>
-                  <Input placeholder="HogehogE" {...field} />
-                </FormControl>
-                <FormMessage className="text-red-600" />
-              </FormItem>
-
-            )}
-          />
-          <Button type="submit" className="block w-full text-white">Submit</Button>
-        </form>
-      </Form>
+    <div>
+        <Button type="submit" className="block w-full bg-white text-black mt-20">Googleで認証する</Button>
     </div>
-
   )
 }

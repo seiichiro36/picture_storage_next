@@ -7,14 +7,25 @@ import { Label } from "@/_components/ui/label";
 import { Button } from "@/_components/ui/button";
 import { Textarea } from "@/_components/ui/textarea";
 import { Alert, AlertDescription } from "@/_components/ui/alert";
+import { useAtom} from "jotai";
+import { emailAtom } from '@/basic/atom'; 
+import { useRouter } from 'next/navigation';
+
+import { Checkbox } from "@/_components/ui/checkbox";
+import { Badge } from "@/_components/ui/badge";
+
 
 const ProfileSetup = () => {
+  const router = useRouter()
+
   const [formData, setFormData] = useState({
     name: '',
     userId: '',
     statusMessage: '',
     profileImage: null
   });
+
+  const [email] = useAtom(emailAtom);
 
   const [errors, setErrors] = useState({});
   const [previewUrl, setPreviewUrl] = useState('');
@@ -65,10 +76,38 @@ const ProfileSetup = () => {
       console.log('フォームデータ:', formData);
       // ここで実際のAPI送信処理を行う
     }
+    router.push("/")
+  };
+
+  const handleBackPage = () => {
+    router.push("/login")
+  }
+
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  
+  const tags = [
+    { id: "illustration", label: "イラスト" },
+    { id: "character", label: "キャラクター" },
+    { id: "background", label: "背景" },
+    { id: "animation", label: "アニメーション" },
+    { id: "concept-art", label: "コンセプトアート" },
+    { id: "fan-art", label: "ファンアート" }
+  ];
+
+  const toggleTag = (tagId: string) => {
+    setSelectedTags(prev =>
+      prev.includes(tagId)
+        ? prev.filter(id => id !== tagId)
+        : [...prev, tagId]
+    );
   };
 
   return (
+    <div>
+    <Button className='ml-20 p-3 rounded-md' onClick={() => handleBackPage()}>前に戻る</Button>
     <Card className="w-full max-w-lg mx-auto">
+
+      {email}
       <CardHeader>
         <CardTitle className="text-2xl text-center">プロフィール設定</CardTitle>
       </CardHeader>
@@ -144,12 +183,55 @@ const ProfileSetup = () => {
             )}
           </div>
 
-          <Button type="submit" className="w-full">
+          <Label>タグを選択してください</Label>
+          
+          <div className="flex flex-wrap gap-2">
+        {tags.map(tag => (
+          <div
+            key={tag.id}
+            className="flex items-center"
+          >
+            <Checkbox
+              id={tag.id}
+              checked={selectedTags.includes(tag.id)}
+              onCheckedChange={() => toggleTag(tag.id)}
+              className="hidden"
+            />
+            <Badge
+              variant={selectedTags.includes(tag.id) ? "default" : "outline"}
+              className="cursor-pointer hover:bg-primary/90"
+              onClick={() => toggleTag(tag.id)}
+            >
+              {tag.label}
+            </Badge>
+          </div>
+        ))}
+      </div>
+
+      {selectedTags.length > 0 && (
+        <div className="mt-4">
+          <p className="text-sm text-muted-foreground">
+            選択中のタグ: {selectedTags.length}個
+          </p>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {selectedTags.map(tagId => (
+              <Badge key={tagId} variant="secondary">
+                {tags.find(t => t.id === tagId)?.label}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
+
+
+          <Button type="submit" className="w-full" >
             登録する
           </Button>
         </form>
       </CardContent>
     </Card>
+    </div>
+
   );
 };
 

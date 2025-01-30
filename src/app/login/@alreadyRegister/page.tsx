@@ -45,7 +45,6 @@ interface LoginFormProps {
 }
 
 export default function ProfileForm({className}: LoginFormProps){
-
   const router = useRouter()
 
   const [displayname, setDisplayName] = useAtom(displayNameAtom)
@@ -67,36 +66,13 @@ export default function ProfileForm({className}: LoginFormProps){
     handleLogin({email: values.email, password: values.password})
   }
 
-  async function signInWithGoogle() {
-    try {
-      console.log("Starting Google Sign in");
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-  
-      const user = result.user;
-
-      console.log("Sign in successful: ", user);
-
-      console.log(user.displayName);
-      console.log("uid：", user.uid);
-      
-
-
-      setDisplayName(user.displayName)
-      
-
-      console.log("User data saved successfully");
-
-    } catch (error) {
-      console.error("Sign in Failed:", error);      
-    }
-
-  }
 
   const handleLogin = async ({email, password}: LgoinUserProp) => {
     console.log(email, password);
     const result = await checkUserWhetherIsExist({email, password})
     console.log(result.message);
+
+    router.push("/arts")
     
   }
 
@@ -104,7 +80,7 @@ export default function ProfileForm({className}: LoginFormProps){
   return (
     <div className="bg-white-500 w-[1200px] max-w-md mx-auto">
     <Form {...form}>
-    <div className='text-2xl font-bold  text-center mb-4'>ログイン</div>
+    <div className='text-2xl font-bold  text-center mt-4'>ログイン</div>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
         <FormField
           control={form.control}

@@ -1,10 +1,11 @@
 import React from 'react'
 
 const layout = ({
-    children, newRegister, alreadyRegister}: Readonly<{
+    children, newRegister, alreadyRegister, serviceAuthentication}: Readonly<{
       children: React.ReactNode
       newRegister: React.ReactNode
       alreadyRegister: React.ReactNode
+      serviceAuthentication: React.ReactNode
     }>) => {
   return (
     <div>
@@ -12,6 +13,7 @@ const layout = ({
         <div>
         {newRegister}
         {alreadyRegister}
+        {serviceAuthentication}
         </div>
       </div>
 
