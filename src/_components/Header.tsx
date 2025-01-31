@@ -1,50 +1,76 @@
 "use client"
 
-import { Button } from '@/_components/ui/button'
-import { Input } from '@/_components/ui/input'
-import auth from '@/firebase'
 import Link from 'next/link'
-import {  useRouter } from "next/navigation"
 import React from 'react'
+import { Button } from './ui/button'
+import { Input } from "./ui/input"
+import {
+    Menubar,
+    MenubarContent,
+    MenubarItem,
+    MenubarMenu,
+    MenubarSeparator,
+    MenubarShortcut,
+    MenubarTrigger,
+} from ".//ui/menubar"
+import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+
 
 const Header = () => {
-
-  const handleSignOut = () => {
     const router = useRouter()
-    auth.signOut()
+    const searchParams = useSearchParams()
+    const [searchValue, setSearchValue] = useState('')
 
-    router.push("/posts")
-  }
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-  return (
-    <div>
-<header className='h-56 bg-gray-700 w-full border-b-4 border-primary'>
-<div className='flex justify-between items-center'>
-  <div>
-    <div className='pl-20 pt-3' > 
-    <div className='flex items-center space-x-4'>
+        const params = new URLSearchParams(searchParams);
 
-        <Input className='w-40'/>
+        params.set("q", searchValue)
 
-      <Button>検索</Button>
-    </div>
-    </div>
-  </div>
-  <div className='outline-none'>
-  </div>
-  <div className='flex flex-col items-center ml-[120px]'>
-    <Link href="/login">
-      <Button className='mt-5 mr-10  w-32' onClick={() => handleSignOut()}>サインアウト</Button>
-    </Link>
-    <Link href="/posts/new">
-     <Button className='mt-10 mr-10 w-32'>投稿</Button>
-    </Link>
-  </div>
-</div>
+        router.push(`?${params.toString()}`)
+    }
 
-</header>
-    </div>
-  )
+
+    return (
+        <header className='w-full h-[160px] bg-[#a7c6ed] shadow-md'>
+            <nav className='h-full max-w-7xl mx-auto px-4 flex items-center justify-between'>
+                <div className='text-2xl font-bold'>Logo</div>
+                <div className="flex w-full max-w-sm items-center space-x-2">
+                    <form onSubmit={handleSubmit} className='flex'>
+                        <Input type="text" value={searchValue} onChange={(e) => setSearchValue(e.target.value)} placeholder="検索" />
+                        <Button type="submit" className='bg-[#3b5a9b] hover:bg-[#1e3a78]'>Search</Button>
+                    </form>
+
+                </div>
+                <div className='flex gap-7'>
+                    {/* <a href="#" className='hover:text-blue-600'>Home</a>
+          <a href="#" className='hover:text-blue-600'>About</a>
+          <a href="#" className='hover:text-blue-600'>Contact</a> */}
+                    <Link href="/home"><Button variant="ghost">Home</Button></Link>
+                    <Link href="/home"><Button variant="ghost">Home</Button></Link>
+                    <Link href="/home"><Button variant="ghost">Post</Button></Link>
+                    <Menubar>
+                        <MenubarMenu>
+                            <MenubarTrigger><div className="w-12 h-12 bg-white rounded-full"></div></MenubarTrigger>
+                            <MenubarContent>
+                                <MenubarItem>
+                                    New Tab <MenubarShortcut>⌘T</MenubarShortcut>
+                                </MenubarItem>
+                                <MenubarItem>New Window</MenubarItem>
+                                <MenubarSeparator />
+                                <MenubarItem>Share</MenubarItem>
+                                <MenubarSeparator />
+                                <MenubarItem>Print</MenubarItem>
+                            </MenubarContent>
+                        </MenubarMenu>
+                    </Menubar>
+
+                </div>
+            </nav>
+        </header>
+    )
 }
 
 export default Header
