@@ -21,9 +21,9 @@ const Post = () => {
   
 
   return (
-    <div className="bg-red-500 h-screen">
+    <div className="h-screen">
       <main>
-          <Button className="dark:md:hover:bg-fuchsia-600" onClick={() => handleLogout()}>logout</Button>
+          <Button onClick={() => handleLogout()}>logout</Button>
       </main>
     </div>
   )
