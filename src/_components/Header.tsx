@@ -40,7 +40,7 @@ const Header = () => {
                 <div className="flex w-full max-w-sm items-center space-x-2">
                     <form onSubmit={handleSubmit} className='flex'>
                         <Input type="text" value={searchValue} onChange={(e) => setSearchValue(e.target.value)} placeholder="検索" />
-                        <Button type="submit" className='bg-[#3b5a9b] hover:bg-[#1e3a78]'>Search</Button>
+                        <Button type="submit" className='ml-3 w-40 bg-[#3b5a9b] hover:bg-[#1e3a78]'>Search</Button>
                     </form>
 
                 </div>
@@ -48,9 +48,9 @@ const Header = () => {
                     {/* <a href="#" className='hover:text-blue-600'>Home</a>
           <a href="#" className='hover:text-blue-600'>About</a>
           <a href="#" className='hover:text-blue-600'>Contact</a> */}
-                    <Link href="/home"><Button variant="ghost">Home</Button></Link>
-                    <Link href="/home"><Button variant="ghost">Home</Button></Link>
-                    <Link href="/home"><Button variant="ghost">Post</Button></Link>
+                    <Link href="/arts"><Button variant="ghost">Home</Button></Link>
+                    <Link href="/likes"><Button variant="ghost">Like</Button></Link>
+                    <Link href="/post"><Button variant="ghost">Post</Button></Link>
                     <Menubar>
                         <MenubarMenu>
                             <MenubarTrigger><div className="w-12 h-12 bg-white rounded-full"></div></MenubarTrigger>

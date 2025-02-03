@@ -21,9 +21,9 @@ const Post = () => {
   
 
   return (
-    <div className="h-screen">
+    <div className="">
       <main>
-          <Button onClick={() => handleLogout()}>logout</Button>
+        ああああ
       </main>
     </div>
   )
