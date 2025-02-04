@@ -22,6 +22,7 @@ import { displayNameAtom } from "@/basic/atom"
 import { useAtom } from "jotai"
 import Link from "next/link"
 import { useRouter} from "next/navigation"
+import { emailAtom } from '@/basic/atom'
 
 import { LgoinUserProp } from "@/_Props/Login"
 
@@ -48,6 +49,7 @@ export default function ProfileForm({className}: LoginFormProps){
   const router = useRouter()
 
   const [displayname, setDisplayName] = useAtom(displayNameAtom)
+  const [email, setemail] = useAtom(emailAtom)
   
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -62,6 +64,7 @@ export default function ProfileForm({className}: LoginFormProps){
   function onSubmit(values: z.infer<typeof formSchema>) {
     // console.log(values.email, values.password);
     // console.log('Form values:', values); // 値を確認
+    setemail(values.email)
     
     handleLogin({email: values.email, password: values.password})
   }
