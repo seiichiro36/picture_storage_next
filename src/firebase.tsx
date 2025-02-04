@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, getFirestore, query, where } from "firebase/firestore";
-import { connectStorageEmulator, getStorage } from "firebase/storage";
+import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query, serverTimestamp, Timestamp, where } from "firebase/firestore";
+import { connectStorageEmulator, getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 import { LgoinUserProp } from "./_Props/Login"; 
 
@@ -22,39 +22,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
-
-
-// export const checkUserExistance = () => {
-//   return new Promise((resolve) => {
-//     onAuthStateChanged(auth, async (user) => {
-//       if (!user) {
-//         return null;
-//       }
-//       console.log("checkUserDocumentExists内のuid: ", user.uid);
-//       if (user) {
-//         const uid = user.uid;
-//         const userRef = doc(db, "users", uid);
-
-//         try {
-//           const docSnap = await getDoc(userRef);
-//           if (docSnap.exists()) {
-//             console.log("ユーザードキュメントが存在します");
-//             resolve(true);
-//           } else {
-//             console.log("ユーザードキュメントが存在しません");
-//             resolve(false);
-//           }
-//         } catch (error) {
-//           console.error("エラーが発生しました:", error);
-//           resolve(false);
-//         }
-//       } else {
-//         console.log("ユーザーがログインしていません");
-//         resolve(false);
-//       }
-//     });
-//   });
-// }
 
 export const checkUserWhetherIsExist = async ({email, password}: LgoinUserProp) => {
   console.log("checkUserWhetherIsExist", email, password);
@@ -80,6 +47,88 @@ export const checkUserWhetherIsExist = async ({email, password}: LgoinUserProp) 
   } catch (error) {
     console.error('検索エラー', error);
     return {exists: false, message: 'エラーが発生しました'};
+  }
+};
+
+// アートワークスキーマ
+interface Artwork {
+  id: string;
+  userId: string; // 投稿者のユーザーID
+  title: string;
+  description?: string;
+  tags?: string[];
+  imageUrl: string; // Storageの画像URL
+  videoUrl?: string; // 任意の動画URL
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+
+
+// 投稿関係
+// アートワーク保存関数
+const saveArtwork = async (artwork: Artwork) => {
+  try {
+    // ユーザー固有のアートワークコレクションに保存
+    const userArtworksRef = collection(db, 'users', artwork.userId, 'artworks');
+    const userArtworkDoc = await addDoc(userArtworksRef, {
+      title: artwork.title,
+      description: artwork.description || '',
+      tags: artwork.tags || [],
+      imageUrl: artwork.imageUrl,
+      videoUrl: artwork.videoUrl || '',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+
+    // メインのアートワークコレクションに保存
+    const artworksRef = collection(db, 'artworks');
+    await addDoc(artworksRef, {
+      ...artwork,
+      id: userArtworkDoc.id
+    });
+
+    return userArtworkDoc.id;
+  } catch (error) {
+    console.error('アートワーク保存エラー:', error);
+    throw error;
+  }
+};
+
+// 画像アップロード関数
+const uploadArtworkImage = async (file: File, userId: string) => {
+  try {
+    // ユニークなファイル名生成
+    const fileName = `${userId}_${Date.now()}_${file.name}`;
+    const storageRef = ref(storage, `artworks/${fileName}`);
+    
+    // 画像アップロード
+    const snapshot = await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    
+    return {
+      fileName,
+      downloadURL
+    };
+  } catch (error) {
+    console.error('画像アップロードエラー:', error);
+    return null;
+  }
+};
+
+// 画像とメタデータの取得
+const fetchUserArtworks = async (userId: string): Promise<Artwork[]> => {
+  try {
+    const userArtworksRef = collection(db, 'users', userId, 'artworks');
+    const artworksSnapshot = await getDocs(userArtworksRef);
+    
+    return artworksSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Artwork));
+  } catch (error) {
+    console.error('アートワーク取得エラー:', error);
+    return [];
   }
 };
 

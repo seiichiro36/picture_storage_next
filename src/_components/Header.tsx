@@ -15,12 +15,15 @@ import {
 } from ".//ui/menubar"
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-
+import { useAtom } from "jotai"
+import { emailAtom } from '@/basic/atom'
 
 const Header = () => {
     const router = useRouter()
     const searchParams = useSearchParams()
     const [searchValue, setSearchValue] = useState('')
+
+    const [atomUsername] = useAtom(emailAtom)
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -30,6 +33,10 @@ const Header = () => {
         params.set("q", searchValue)
 
         router.push(`?${params.toString()}`)
+    }
+
+    const handleLogout = () => {
+        router.push("/login")
     }
 
 
@@ -55,14 +62,17 @@ const Header = () => {
                         <MenubarMenu>
                             <MenubarTrigger><div className="w-12 h-12 bg-white rounded-full"></div></MenubarTrigger>
                             <MenubarContent>
+                                
                                 <MenubarItem>
                                     New Tab <MenubarShortcut>⌘T</MenubarShortcut>
                                 </MenubarItem>
+                                <MenubarItem>{atomUsername}</MenubarItem>
                                 <MenubarItem>New Window</MenubarItem>
                                 <MenubarSeparator />
                                 <MenubarItem>Share</MenubarItem>
                                 <MenubarSeparator />
                                 <MenubarItem>Print</MenubarItem>
+                                <MenubarItem><p className='text-red-600 cursor-pointer'><button onClick={() => { handleLogout() }}>Logout</button></p></MenubarItem>
                             </MenubarContent>
                         </MenubarMenu>
                     </Menubar>
