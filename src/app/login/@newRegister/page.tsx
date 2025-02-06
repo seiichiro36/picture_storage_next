@@ -17,7 +17,7 @@ import {
 import { Input } from "@/_components/ui/input"
 import React from "react"
 import { GoogleAuthProvider, signInWithPopup, User } from "firebase/auth"
-import auth, { checkUserWhetherIsExist } from "@/firebase"
+import auth, { checkUserWhetherIsExist, createNewUser } from "@/firebase"
 import { displayNameAtom, emailAtom, passwordAtom } from "@/basic/atom"
 import { useAtom } from "jotai"
 import Link from "next/link"
@@ -60,21 +60,29 @@ export default function ProfileForm({ className }: LoginFormProps) {
       password: ""
     },
   })
-  
-  function onSubmit(values: z.infer<typeof formSchema>) {
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
 
     console.log(values.email, values.password);
 
     setEmail(values.email)
     setPassword(values.password)
-    
-    router.push("/register")
+
+    await handleLogin({ email: values.email, password: values.password })
+
+
   }
 
   const handleLogin = async ({ email, password }: LgoinUserProp) => {
     console.log(email, password);
     const result = await checkUserWhetherIsExist({ email, password })
-    console.log(result.message);
+    console.log(result.exists);
+
+    if (result.exists) {
+      router.push("/login")
+    } else {
+      router.push("/register")
+    }
   }
 
 
@@ -89,11 +97,11 @@ export default function ProfileForm({ className }: LoginFormProps) {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>              
+                <FormLabel>
                   <p className="text-sm">
                     新規登録に使用したいメールアドレスを入力してください
                   </p>
-                  </FormLabel>
+                </FormLabel>
                 <FormControl>
                   <Input placeholder="hogehoge@hoge.hoge" {...field} />
                 </FormControl>
@@ -115,7 +123,7 @@ export default function ProfileForm({ className }: LoginFormProps) {
 
             )}
           />
-          <Button type="submit" className="block w-full text-white">Submit</Button>
+          <Button type="submit" className="block w-full text-white bg-[#3b5a9b] hover:bg-[#1e3a78]">登録</Button>
         </form>
       </Form>
     </div>
