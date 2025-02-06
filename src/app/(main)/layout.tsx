@@ -13,7 +13,7 @@ const RootLayout = ({
           <div className="fixed z-10 w-full">
             <Header />
           </div>
-          <div className='pt-[160px] max-w-7xl'>{children}</div>
+          <div className='pt-[160px] max-w-7xl mx-auto'>{children}</div>
         </div>
       </body>
     </html>

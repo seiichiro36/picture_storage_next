@@ -1,7 +1,7 @@
 "use client"
 
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Button } from './ui/button'
 import { Input } from "./ui/input"
 import {
@@ -13,19 +13,24 @@ import {
     MenubarShortcut,
     MenubarTrigger,
 } from ".//ui/menubar"
-import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAtom } from "jotai"
 import { emailAtom } from '@/basic/atom'
+import { getProfileImage } from '@/firebase'
+import Image from 'next/image'
 
 const Header = () => {
     const router = useRouter()
+    const imgRef = useRef(null);
+
     const searchParams = useSearchParams()
     const [searchValue, setSearchValue] = useState('')
+    const [imageUrl, setImageUrl] = useState(null)
+    const [isLoading, setIsLoading] = useState(false)
 
     const [atomUsername] = useAtom(emailAtom)
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: any) => {
         e.preventDefault();
 
         const params = new URLSearchParams(searchParams);
@@ -40,6 +45,30 @@ const Header = () => {
     }
 
 
+    function updateProfileImage(imgElement, imageUrl) {
+        if (imageUrl) {
+            imgElement.src = imageUrl;
+        }
+    }
+
+    const email = 'aaa@gmail.com'
+
+    useEffect(() => {
+        const fetchProfileImage = async () => {
+          try {
+            const imageUrl = await getProfileImage(email);
+            if (imgRef.current) {
+              updateProfileImage(imgRef.current, imageUrl);
+            }
+          } catch (error) {
+            console.error('画像取得エラー', error);
+          }
+        };
+    
+        fetchProfileImage();
+      }, [email]);
+
+
     return (
         <header className='w-full h-[160px] bg-[#a7c6ed] shadow-md'>
             <nav className='h-full max-w-7xl mx-auto px-4 flex items-center justify-between'>
@@ -52,17 +81,19 @@ const Header = () => {
 
                 </div>
                 <div className='flex gap-7'>
-                    {/* <a href="#" className='hover:text-blue-600'>Home</a>
-          <a href="#" className='hover:text-blue-600'>About</a>
-          <a href="#" className='hover:text-blue-600'>Contact</a> */}
                     <Link href="/arts"><Button variant="ghost">Home</Button></Link>
                     <Link href="/likes"><Button variant="ghost">Like</Button></Link>
                     <Link href="/post"><Button variant="ghost">Post</Button></Link>
-                    <Menubar>
+                    <Menubar className='border-none focus:ring-0'>
                         <MenubarMenu>
-                            <MenubarTrigger><div className="w-12 h-12 bg-white rounded-full"></div></MenubarTrigger>
+                            <MenubarTrigger className="p-0 focus:outline-none focus:ring-0" >
+                                <img
+                                    ref={imgRef}
+                                    alt="プロフィール画像"
+                                    className='w-24 h-24 rounded-full object-cover  object-center' />
+                            </MenubarTrigger>
                             <MenubarContent>
-                                
+
                                 <MenubarItem>
                                     New Tab <MenubarShortcut>⌘T</MenubarShortcut>
                                 </MenubarItem>
