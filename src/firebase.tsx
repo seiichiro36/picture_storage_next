@@ -93,7 +93,8 @@ interface UserProfile {
 }
 
 export const uploadProfileImage = async (file: File, email: string): Promise<string> => {
-  const storageRef = ref(storage, `profileImages/${email}`);
+  const safeEmailPath = encodeURIComponent(email);
+  const storageRef = ref(storage, `profileImage/${safeEmailPath}`);
   await uploadBytes(storageRef, file);
   return getDownloadURL(storageRef);
 };
@@ -256,6 +257,35 @@ const fetchUserArtworks = async (userId: string): Promise<Artwork[]> => {
     return [];
   }
 };
+
+// プロフィール画像を表示する関数
+export async function getProfileImage(email: any) {
+  try {
+    // Firebaseストレージインスタンスの取得
+    const storage = getStorage();
+    
+    // メールアドレスをエンコードして安全なパスを作成
+    const safeEmailPath = encodeURIComponent(email);
+    // 画像への参照を作成
+    const imageRef = ref(storage, `profileImage/${safeEmailPath}`);
+    
+    // 画像のダウンロードURLを取得
+    const imageUrl = await getDownloadURL(imageRef);
+    
+    return imageUrl;
+  } catch (error) {
+    // エラーハンドリング
+    console.error("プロフィール画像の取得に失敗しました:", error);
+    
+    // エラーに応じて異なる処理
+    if (error.code === 'storage/object-not-found') {
+      console.log('画像が見つかりませんでした');
+      return null;
+    }
+    
+    throw error;
+  }
+}
 
 
 // exportしてどこからでも使えるようにする
