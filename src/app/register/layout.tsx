@@ -8,7 +8,7 @@ const MainLayout = ({
 }>) => {
   return (
     <div>
-      <div className='pt-[160px] max-w-7xl'>{children}</div>
+      <div className='mt-[32px] max-w-7xl mx-auto'>{children}</div>
     </div>
   )
 }

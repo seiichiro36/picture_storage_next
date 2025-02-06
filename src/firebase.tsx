@@ -1,7 +1,8 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query, serverTimestamp, Timestamp, where } from "firebase/firestore";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, serverTimestamp, setDoc, Timestamp, where } from "firebase/firestore";
 import { connectStorageEmulator, getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import {toast} from "react-toastify"
 
 import { LgoinUserProp } from "./_Props/Login"; 
 
@@ -23,30 +24,154 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-export const checkUserWhetherIsExist = async ({email, password}: LgoinUserProp) => {
-  console.log("checkUserWhetherIsExist", email, password);
-  
+interface LoginUserProp {
+  email: string;
+  password: string;
+}
+
+
+interface ResisterUserProp {
+  email: string;
+  password: string;
+  username: string;
+  userId: string;
+  bio?: string;
+  tags?: string[];
+  ProfileImageName?: string;
+}
+
+interface AuthResponse {
+  exists: boolean;
+  message: string;
+  uid?: string;
+}
+
+
+export const checkUserWhetherIsExist = async ({ email, password }: LoginUserProp): Promise<AuthResponse> => {
   try {
-    // まずFirebase Authで認証
-    // const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    // const uid = userCredential.user.uid;
     if (!email || !password) {
       throw new Error('Email and password are required');
     }
 
-    // Firebaseでユーザデータを検索
-    const userRef = collection(db, 'users')
-    const q = query(userRef, where('email', '==', email), where('password', '==', password));
-    const querySnapshot = await getDocs(q)
+    // Firebase Authで認証
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const uid = userCredential.user.uid;
+
+    // Firestoreでユーザー情報を取得（パスワードは保存しない）
+    const userRef = collection(db, 'user');
+    const q = query(userRef, where('email', '==', email));
+    const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
-      return {exists: true, message: '存在しています'};
-    } 
-    return {exist: false, message: '存在していません'};
+      return { exists: true, message: '存在しています', uid };
+    }
 
-  } catch (error) {
-    console.error('検索エラー', error);
-    return {exists: false, message: 'エラーが発生しました'};
+    return { exists: false, message: '存在していません' };
+
+  } catch (error: any) {
+    if (error.code === 'auth/user-not-found') {
+      return { exists: false, message: 'ユーザーが存在しません' };
+    }
+    if (error.code === 'auth/wrong-password') {
+      toast("パスワードが違います！！", {
+        style: { background: '#ff3c3c', color: "#ffffff" },
+        
+      })
+      return { exists: false, message: 'パスワードが間違っています' };
+    }
+    return { exists: false, message: 'ログインエラーが発生しました' };
+  }
+}
+
+interface UserProfile {
+  email: string;
+  name: string;
+  userId: string;
+  statusMessage?: string;
+  tags: string[];
+  profileImageUrl?: string;
+}
+
+export const uploadProfileImage = async (file: File, email: string): Promise<string> => {
+  const storageRef = ref(storage, `profileImages/${email}`);
+  await uploadBytes(storageRef, file);
+  return getDownloadURL(storageRef);
+};
+
+
+export const storeTemporaryRegistration = async (profile: UserProfile, password: string): Promise<AuthResponse> => {
+  try {
+    const tempRef = doc(collection(db, 'tempUser'));
+    await setDoc(tempRef, {
+      ...profile,
+      password,
+      createdAt: new Date(),
+    });
+
+    return { exists: true, message: 'プロフィール情報を保存しました', tempId: tempRef.id };
+  } catch (error: any) {
+    console.error('一時保存エラー:', error);
+    return { exists: false, message: 'プロフィール保存に失敗しました' };
+  }
+};
+
+// Step 2: Complete registration
+export const completeRegistration = async (tempId: string): Promise<AuthResponse> => {
+  try {
+    const tempDoc = await getDoc(doc(db, 'tempUser', tempId));
+    if (!tempDoc.exists()) {
+      throw new Error('一時データが見つかりません');
+    }
+
+    const userData = tempDoc.data();
+    const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
+    const uid = userCredential.user.uid;
+
+    const userRef = doc(collection(db, 'users'), uid);
+    await setDoc(userRef, {
+      email: userData.email,
+      name: userData.name,
+      userId: userData.userId,
+      statusMessage: userData.statusMessage,
+      tags: userData.tags,
+      profileImageUrl: userData.profileImageUrl,
+      createdAt: new Date(),
+    });
+
+    await deleteDoc(doc(db, 'tempUsers', tempId));
+
+    return { exists: true, message: 'ユーザー登録が完了しました', uid };
+  } catch (error: any) {
+    console.error('登録エラー:', error);
+    return { exists: false, message: '登録に失敗しました' };
+  }
+};
+
+// 新規ユーザー登録用の関数
+export const createNewUser = async ({ email, password, username, userId, bio, tags, ProfileImageName }: ResisterUserProp): Promise<AuthResponse> => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = userCredential.user.uid;
+
+    const userRef = doc(collection(db, 'user'), uid); // 'user' から 'users' に修正
+    await setDoc(userRef, {
+      email,
+      username,
+      userId, 
+      bio,
+      tags,
+      ProfileImageName,
+      createdAt: new Date(),
+    });
+
+    return { exists: true, message: 'ユーザーを作成しました', uid };
+  } catch (error: any) {
+    console.error('作成エラー:', {
+      code: error.code,
+      message: error.message,
+      stack: error.stack
+    });
+    return { exists: false, message: `ユーザー作成に失敗しました: ${error.message}` };
   }
 };
 

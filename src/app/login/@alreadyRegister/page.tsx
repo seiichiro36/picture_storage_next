@@ -17,20 +17,20 @@ import {
 import { Input } from "@/_components/ui/input"
 import React from "react"
 import { GoogleAuthProvider, signInWithPopup, User } from "firebase/auth"
-import auth, {checkUserWhetherIsExist} from "@/firebase"
+import auth, { checkUserWhetherIsExist } from "@/firebase"
 import { displayNameAtom } from "@/basic/atom"
 import { useAtom } from "jotai"
 import Link from "next/link"
-import { useRouter} from "next/navigation"
+import { useRouter } from "next/navigation"
 import { emailAtom } from '@/basic/atom'
 
 import { LgoinUserProp } from "@/_Props/Login"
 
 const formSchema = z.object({
   email: z
-  .string()
-  .email({ message: "Invalid email format. Please provide a valid email address." })
-  .min(1, { message: "Email is required." }),
+    .string()
+    .email({ message: "Invalid email format. Please provide a valid email address." })
+    .min(1, { message: "Email is required." }),
   password: z
     .string()
     .min(8, { message: "Password must be at least 8 characters." })
@@ -45,12 +45,13 @@ interface LoginFormProps {
   className?: string
 }
 
-export default function ProfileForm({className}: LoginFormProps){
+export default function ProfileForm({ className }: LoginFormProps) {
   const router = useRouter()
+  const isExsitedUser = "既に登録されています"
 
   const [displayname, setDisplayName] = useAtom(displayNameAtom)
   const [email, setemail] = useAtom(emailAtom)
-  
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,60 +66,60 @@ export default function ProfileForm({className}: LoginFormProps){
     // console.log(values.email, values.password);
     // console.log('Form values:', values); // 値を確認
     setemail(values.email)
-    
-    handleLogin({email: values.email, password: values.password})
+
+    handleLogin({ email: values.email, password: values.password })
   }
 
 
-  const handleLogin = async ({email, password}: LgoinUserProp) => {
+  const handleLogin = async ({ email, password }: LgoinUserProp) => {
     console.log(email, password);
-    const result = await checkUserWhetherIsExist({email, password})
+    const result = await checkUserWhetherIsExist({ email, password })
+    console.log(result.exists);
     console.log(result.message);
-
-    router.push("/arts")
-    
+    if (result.exists) {
+      router.push("/arts")
+    } else {
+      router.push("/login")
+    }
   }
 
-  
+
   return (
     <div className="bg-white-500 w-[1200px] max-w-md mx-auto">
-    <Form {...form}>
-    <div className='text-2xl font-bold  text-center mt-4'>ログイン</div>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>メールアドレス</FormLabel>
-              <FormControl>
-                <Input placeholder="hogehoge@hoge.hoge" {...field} />
-              </FormControl>
-              <FormDescription>
-              {/* Please enter your email address for new registration */}
-              登録済の場合はこちら入力してください
-              </FormDescription>
-              <FormMessage className="text-red-600"/>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>パスワード</FormLabel>
-              <FormControl>
-                <Input placeholder="HogehogE" {...field} />
-              </FormControl>
-              <FormMessage className="text-red-600"/>
-            </FormItem>
-            
-          )}
-        />
-        <Button type="submit" className="block w-full text-white">Submit</Button>
+
+      <Form {...form}>
+        <div className='text-2xl font-bold  text-center mt-4'>ログイン</div>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>メールアドレス</FormLabel>
+                <FormControl>
+                  <Input placeholder="hogehoge@hoge.hoge" {...field} />
+                </FormControl>
+                <FormMessage className="text-red-600" />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>パスワード</FormLabel>
+                <FormControl>
+                  <Input placeholder="HogehogE" {...field} />
+                </FormControl>
+                <FormMessage className="text-red-600" />
+              </FormItem>
+
+            )}
+          />
+          <Button type="submit" className="block w-full text-white bg-[#3b5a9b] hover:bg-[#1e3a78]">登録</Button>
         </form>
-        </Form>
+      </Form>
     </div>
 
   )

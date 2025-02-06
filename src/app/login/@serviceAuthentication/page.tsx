@@ -59,13 +59,12 @@ export default function ProfileForm({ className }: LoginFormProps) {
       password: ""
     },
   })
-  
+
   function onSubmit(values: z.infer<typeof formSchema>) {
 
     console.log(values.email, values.password);
-    
+
     router.push("/register")
-    // handleLogin({ email: values.email, password: values.password })
   }
 
   const handleLogin = async ({ email, password }: LgoinUserProp) => {
@@ -77,7 +76,10 @@ export default function ProfileForm({ className }: LoginFormProps) {
 
   return (
     <div>
-        <Button type="submit" className="block w-full bg-white text-black mt-20">Googleで認証する</Button>
+      <div>
+        <Button type="submit" className="block w-full bg-white text-black mt-10 hover:bg-[#c5c1c1]">Googleで認証する</Button>
+        <Button type="submit" className="block w-full bg-black text-white mt-2 hover:bg-[#3d3d3d]">Githubで認証する</Button>
+      </div>
     </div>
   )
 }
