@@ -1,5 +1,6 @@
 import Header from '@/_components/Header';
-import React from 'react'
+import React, { Suspense } from 'react'
+import Loading from './loading';
 
 const RootLayout = ({
   children,
@@ -13,7 +14,9 @@ const RootLayout = ({
           <div className="fixed z-10 w-full">
             <Header />
           </div>
-          <div className='pt-[160px] max-w-7xl mx-auto'>{children}</div>
+          <Suspense fallback={<Loading />}>
+            <div className='pt-[160px] max-w-7xl mx-auto'>{children}</div>
+          </Suspense>
         </div>
       </body>
     </html>

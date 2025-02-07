@@ -219,11 +219,11 @@ export const saveArtwork = async (artwork: Artwork) => {
 };
 
 // 画像アップロード関数
-export const uploadArtworkImage = async (file: File, userId: string) => {
+export const uploadArtworkImage = async (file: File, userId: string, fileNameWithDate: string) => {
   try {
     // ユニークなファイル名生成
-    const fileName = `${userId}_${Date.now()}_${file.name}`;
-    const storageRef = ref(storage, `artworks/${fileName}`);
+    // const fileName = `${userId}_${Date.now()}_${file.name}`;
+    const storageRef = ref(storage, `artworks/${fileNameWithDate}`);
     
     // 画像アップロード
     const snapshot = await uploadBytes(storageRef, file);
@@ -240,21 +240,58 @@ export const uploadArtworkImage = async (file: File, userId: string) => {
 };
 
 // 画像とメタデータの取得
-const fetchUserArtworks = async (userId: string): Promise<Artwork[]> => {
+export const fetchUserArtworks = async (userId: string): Promise<Artwork[]> => {
   try {
-    const userArtworksRef = collection(db, 'users', userId, 'artworks');
+    // Firestoreからメタデータを取得
+    const userArtworksRef = collection(db, 'user', userId, 'artworks');
     const artworksSnapshot = await getDocs(userArtworksRef);
     
-    return artworksSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    } as Artwork));
+    // 各アートワークについて、Storageからの画像URLを取得
+    const artworksWithUrls = await Promise.all(
+      artworksSnapshot.docs.map(async (doc) => {
+        const data = doc.data();
+        let imageUrl = data.imageUrl;
+        
+        // imageUrlがStorage参照パスの場合（例: "artworks/image123.jpg"）
+        if (imageUrl && !imageUrl.startsWith('http')) {
+          try {
+            imageUrl = "artworks/" + imageUrl
+            const imageRef = ref(storage, imageUrl);
+
+            imageUrl = await getDownloadURL(imageRef);
+          } catch (error) {
+            console.error('画像URL取得エラー:', error);
+            imageUrl = '/placeholder-image.jpg'; // プレースホルダー画像のパス
+          }
+        }
+
+        let videoUrl = data.videoUrl;
+        // 動画URLも同様に処理
+        if (videoUrl && !videoUrl.startsWith('http')) {
+          try {
+            const videoRef = ref(storage, videoUrl);
+            videoUrl = await getDownloadURL(videoRef);
+          } catch (error) {
+            console.error('動画URL取得エラー:', error);
+            videoUrl = undefined;
+          }
+        }
+
+        return {
+          id: doc.id,
+          ...data,
+          imageUrl,
+          videoUrl
+        } as Artwork;
+      })
+    );
+
+    return artworksWithUrls;
   } catch (error) {
     console.error('アートワーク取得エラー:', error);
     return [];
   }
 };
-
 // プロフィール画像を表示する関数
 export async function getProfileImage(email: any) {
   try {
