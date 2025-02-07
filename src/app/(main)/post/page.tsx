@@ -6,6 +6,8 @@ import { Button } from '@/_components/ui/button';
 import { Input } from '@/_components/ui/input';
 import { Textarea } from '@/_components/ui/textarea';
 import { useRouter } from 'next/navigation';
+import { saveArtwork, uploadArtworkImage } from '@/firebase';
+import { createServerParamsForMetadata } from 'next/dist/server/app-render/entry-base';
 
 const PostForm = () => {
   const router = useRouter()
@@ -33,10 +35,17 @@ const PostForm = () => {
 
 
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
-    console.log(formData);
+    const tags_arr = formData.tags.split(",")
 
+    console.log(formData.title);
+    console.log(formData.description);
+    console.log(tags_arr);
+    console.log(formData.illustration.name);
+
+    saveArtwork({userId: "sss", title: formData.title, description: formData.description, tags: tags_arr, imageUrl: formData.illustration.name})
+    uploadArtworkImage(formData.illustration, "sss")
 
     router.push("/arts")
   };

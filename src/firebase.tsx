@@ -178,25 +178,22 @@ export const createNewUser = async ({ email, password, username, userId, bio, ta
 
 // アートワークスキーマ
 interface Artwork {
-  id: string;
   userId: string; // 投稿者のユーザーID
   title: string;
   description?: string;
   tags?: string[];
   imageUrl: string; // Storageの画像URL
   videoUrl?: string; // 任意の動画URL
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
 }
 
 
 
 // 投稿関係
 // アートワーク保存関数
-const saveArtwork = async (artwork: Artwork) => {
+export const saveArtwork = async (artwork: Artwork) => {
   try {
     // ユーザー固有のアートワークコレクションに保存
-    const userArtworksRef = collection(db, 'users', artwork.userId, 'artworks');
+    const userArtworksRef = collection(db, 'user', artwork.userId, 'artworks');
     const userArtworkDoc = await addDoc(userArtworksRef, {
       title: artwork.title,
       description: artwork.description || '',
@@ -222,7 +219,7 @@ const saveArtwork = async (artwork: Artwork) => {
 };
 
 // 画像アップロード関数
-const uploadArtworkImage = async (file: File, userId: string) => {
+export const uploadArtworkImage = async (file: File, userId: string) => {
   try {
     // ユニークなファイル名生成
     const fileName = `${userId}_${Date.now()}_${file.name}`;
