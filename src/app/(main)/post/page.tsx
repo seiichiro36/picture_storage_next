@@ -38,14 +38,15 @@ const PostForm = () => {
   const handleSubmit = (e: any) => {
     e.preventDefault();
     const tags_arr = formData.tags.split(",")
+    const fileNameWithDate = `${"sss"}_${Date.now()}_${formData.illustration.name}`
 
     console.log(formData.title);
     console.log(formData.description);
     console.log(tags_arr);
     console.log(formData.illustration.name);
 
-    saveArtwork({userId: "sss", title: formData.title, description: formData.description, tags: tags_arr, imageUrl: formData.illustration.name})
-    uploadArtworkImage(formData.illustration, "sss")
+    saveArtwork({userId: "sss", title: formData.title, description: formData.description, tags: tags_arr, imageUrl: fileNameWithDate})
+    uploadArtworkImage(formData.illustration, "sss", fileNameWithDate)
 
     router.push("/arts")
   };
