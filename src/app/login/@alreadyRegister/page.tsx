@@ -8,7 +8,6 @@ import { Button } from "@/_components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -18,13 +17,13 @@ import { Input } from "@/_components/ui/input"
 import React from "react"
 import { GoogleAuthProvider, signInWithPopup, User } from "firebase/auth"
 import auth, { checkUserWhetherIsExist } from "@/firebase"
-import { displayNameAtom } from "@/basic/atom"
+import { persistentEmailAtom } from "@/basic/atom"
 import { useAtom } from "jotai"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { emailAtom } from '@/basic/atom'
-
 import { LgoinUserProp } from "@/_Props/Login"
+
 
 const formSchema = z.object({
   email: z
@@ -45,12 +44,10 @@ interface LoginFormProps {
   className?: string
 }
 
-export default function ProfileForm({ className }: LoginFormProps) {
+export default function ProfileForm() {
+  const [persistentEmail, setPersistentEmail] = useAtom(persistentEmailAtom);
   const router = useRouter()
   const isExsitedUser = "既に登録されています"
-
-  const [displayname, setDisplayName] = useAtom(displayNameAtom)
-  const [email, setemail] = useAtom(emailAtom)
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -65,7 +62,7 @@ export default function ProfileForm({ className }: LoginFormProps) {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // console.log(values.email, values.password);
     // console.log('Form values:', values); // 値を確認
-    setemail(values.email)
+    setPersistentEmail(values.email)
 
     handleLogin({ email: values.email, password: values.password })
   }

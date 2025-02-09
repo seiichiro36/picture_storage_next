@@ -4,6 +4,10 @@ import { useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import { fetchUserArtworks } from "@/firebase";
 import { usePathname, useRouter } from "next/navigation";
+import { persistentEmailAtom } from "@/basic/atom";
+import { useAtom } from "jotai";
+
+
 
 
 interface Artwork {
@@ -19,14 +23,18 @@ export function ArtworkGridClient({ artworks }: { artworks: Artwork[] }) {
     const pathname = usePathname()
     const router = useRouter()
 
+    const [persistentAtom, setPersistentAtom] = useAtom(persistentEmailAtom);
+
     useEffect(() => {
         fetchUserArtworks("sss"); // pathname が変わるたびにデータを取得
         router.refresh()
 
     }, [pathname]);
-
+    console.log(persistentAtom);
+    
     return (
         <div className="container mx-auto p-4">
+            {persistentAtom}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {artworks.map((artwork) => (
                     <Card key={artwork.id} className="overflow-hidden">
