@@ -18,8 +18,6 @@ import { Input } from "@/_components/ui/input"
 import React from "react"
 import { GoogleAuthProvider, signInWithPopup, User } from "firebase/auth"
 import auth, { checkUserWhetherIsExist, createNewUser } from "@/firebase"
-import { displayNameAtom, emailAtom, passwordAtom } from "@/basic/atom"
-import { useAtom } from "jotai"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
@@ -49,10 +47,6 @@ export default function ProfileForm({ className }: LoginFormProps) {
 
   const router = useRouter()
 
-  const [displayname, setDisplayName] = useAtom(displayNameAtom)
-  const [email, setEmail] = useAtom(emailAtom)
-  const [passwored, setPassword] = useAtom(passwordAtom)
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -64,9 +58,6 @@ export default function ProfileForm({ className }: LoginFormProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
     console.log(values.email, values.password);
-
-    setEmail(values.email)
-    setPassword(values.password)
 
     await handleLogin({ email: values.email, password: values.password })
 
@@ -89,7 +80,6 @@ export default function ProfileForm({ className }: LoginFormProps) {
   return (
     <div className="bg-white-500 w-[1200px] max-w-md mx-auto">
       <Form {...form}>
-        {email}
         <div className='text-2xl font-bold  text-center mb-4'>サインイン</div>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
           <FormField

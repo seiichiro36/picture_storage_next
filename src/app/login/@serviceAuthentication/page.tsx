@@ -18,8 +18,6 @@ import { Input } from "@/_components/ui/input"
 import React from "react"
 import { GoogleAuthProvider, signInWithPopup, User } from "firebase/auth"
 import auth, { checkUserWhetherIsExist } from "@/firebase"
-import { displayNameAtom } from "@/basic/atom"
-import { useAtom } from "jotai"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
@@ -47,10 +45,6 @@ interface LoginFormProps {
 export default function ProfileForm({ className }: LoginFormProps) {
 
   const router = useRouter()
-
-  const [displayname, setDisplayName] = useAtom(displayNameAtom)
-  const [email, setEmail] = useAtom(displayNameAtom)
-  const [passwored, setPassword] = useAtom(displayNameAtom)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
