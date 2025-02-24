@@ -16,8 +16,8 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAtom } from "jotai"
 import { emailAtom } from '@/basic/atom'
-import { getProfileImage } from '@/firebase'
-import Image from 'next/image'
+import auth, { getProfileImage } from '@/firebase'
+import { signOut } from 'firebase/auth'
 
 const Header = () => {
     const router = useRouter()
@@ -25,10 +25,8 @@ const Header = () => {
 
     const searchParams = useSearchParams()
     const [searchValue, setSearchValue] = useState('')
-    const [imageUrl, setImageUrl] = useState(null)
-    const [isLoading, setIsLoading] = useState(false)
 
-    const [atomUsername] = useAtom(emailAtom)
+    const [atomEmail] = useAtom(emailAtom)
 
     const handleSubmit = (e: any) => {
         e.preventDefault();
@@ -40,23 +38,26 @@ const Header = () => {
         router.push(`?${params.toString()}`)
     }
 
-    const handleLogout = () => {
-        router.push("/login")
+    const handleLogout = async () => {
+        try {
+            await signOut(auth); // Firebase認証のサインアウト
+            router.replace("/login"); // pushの代わりにreplaceを使用
+        } catch (error) {
+            console.error("ログアウトエラー:", error);
+        }
     }
 
 
-    function updateProfileImage(imgElement, imageUrl) {
+    function updateProfileImage(imgElement: HTMLImageElement, imageUrl:string | null): void {
         if (imageUrl) {
             imgElement.src = imageUrl;
         }
     }
 
-    const email = 'aaa@gmail.com'
-
     useEffect(() => {
         const fetchProfileImage = async () => {
           try {
-            const imageUrl = await getProfileImage(email);
+            const imageUrl = await getProfileImage(atomEmail);
             if (imgRef.current) {
               updateProfileImage(imgRef.current, imageUrl);
             }
@@ -66,7 +67,7 @@ const Header = () => {
         };
     
         fetchProfileImage();
-      }, [email]);
+      }, [atomEmail]);
 
 
     return (
@@ -97,7 +98,7 @@ const Header = () => {
                                 <MenubarItem>
                                     New Tab <MenubarShortcut>⌘T</MenubarShortcut>
                                 </MenubarItem>
-                                <MenubarItem>{atomUsername}</MenubarItem>
+                                <MenubarItem>{atomEmail}</MenubarItem>
                                 <MenubarItem>New Window</MenubarItem>
                                 <MenubarSeparator />
                                 <MenubarItem>Share</MenubarItem>

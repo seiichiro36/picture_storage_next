@@ -21,7 +21,7 @@ import auth, { checkUserWhetherIsExist } from "@/firebase"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
-import { LgoinUserProp } from "@/_Props/Login"
+import { LgoinUserProp } from "@/types/Login"
 
 const formSchema = z.object({
   email: z
