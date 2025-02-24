@@ -21,7 +21,7 @@ import auth, { checkUserWhetherIsExist, createNewUser } from "@/firebase"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
-import { LgoinUserProp } from "@/_Props/Login"
+import { LgoinUserProp } from "@/types/Login"
 import { setSourceMapsEnabled } from "process"
 
 const formSchema = z.object({

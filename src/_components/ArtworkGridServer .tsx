@@ -1,19 +1,20 @@
-import { collection, getDocs } from 'firebase/firestore';
-import { ref, getDownloadURL } from 'firebase/storage';
 import { fetchUserArtworks } from '@/firebase';
 import { ArtworkGridClient } from './ArtworkGridClient';
+import { Artwork } from '@/types/interface';
 
-interface Artwork {
-    id: string;
-    title: string;
-    description?: string;
-    imageUrl: string;
-    tags?: string[];
-    videoUrl?: string;
-  }
+
+// Firebaseから取得したデータを変換する関数
+function convertTimestampToString(artwork: any): Artwork {
+  return {
+    ...artwork,
+    createdAt: artwork.createdAt?.toDate().toISOString() || '',
+    updatedAt: artwork.updatedAt?.toDate().toISOString() || ''
+  };
+}
 
 export async function ArtworkGridServer({ userId }: { userId: string }) {
   const artworks = await fetchUserArtworks(userId);
-  
-  return <ArtworkGridClient artworks={artworks} />;
+  const convertedArtworks = artworks.map(convertTimestampToString);
+
+  return <ArtworkGridClient artworks={convertedArtworks} />;
 }

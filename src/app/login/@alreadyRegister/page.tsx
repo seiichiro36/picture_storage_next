@@ -22,7 +22,7 @@ import { useAtom } from "jotai"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { emailAtom } from '@/basic/atom'
-import { LgoinUserProp } from "@/_Props/Login"
+import { LgoinUserProp } from "@/types/Login"
 
 
 const formSchema = z.object({
