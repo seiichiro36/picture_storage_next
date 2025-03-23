@@ -8,9 +8,13 @@ import { Textarea } from '@/_components/ui/textarea';
 import { useRouter } from 'next/navigation';
 import { saveArtwork, uploadArtworkImage } from '@/firebase';
 import { createServerParamsForMetadata } from 'next/dist/server/app-render/entry-base';
+import { useAtom } from "jotai";
+import { persistentEmailAtom } from '@/basic/atom';
 
 const PostForm = () => {
   const router = useRouter()
+
+  const [persistentAtom, setPersistentAtom] = useAtom(persistentEmailAtom);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -38,15 +42,15 @@ const PostForm = () => {
   const handleSubmit = (e: any) => {
     e.preventDefault();
     const tags_arr = formData.tags.split(",")
-    const fileNameWithDate = `${"sss"}_${Date.now()}_${formData.illustration.name}`
+    const fileNameWithDate = `${persistentAtom}_${Date.now()}_${formData.illustration.name}`
 
     console.log(formData.title);
     console.log(formData.description);
     console.log(tags_arr);
     console.log(formData.illustration.name);
 
-    saveArtwork({userId: "sss", title: formData.title, description: formData.description, tags: tags_arr, imageUrl: fileNameWithDate})
-    uploadArtworkImage(formData.illustration, "sss", fileNameWithDate)
+    saveArtwork({userId: persistentAtom, title: formData.title, description: formData.description, tags: tags_arr, imageUrl: fileNameWithDate})
+    uploadArtworkImage(formData.illustration, persistentAtom, fileNameWithDate)
 
     router.push("/arts")
   };

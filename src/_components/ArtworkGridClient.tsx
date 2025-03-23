@@ -7,9 +7,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { persistentEmailAtom } from "@/basic/atom";
 import { useAtom } from "jotai";
 
-
-
-
 interface Artwork {
     id: string;
     title: string;
@@ -26,7 +23,7 @@ export function ArtworkGridClient({ artworks }: { artworks: Artwork[] }) {
     const [persistentAtom, setPersistentAtom] = useAtom(persistentEmailAtom);
 
     useEffect(() => {
-        fetchUserArtworks("sss"); // pathname が変わるたびにデータを取得
+        fetchUserArtworks(persistentAtom); // pathname が変わるたびにデータを取得
         router.refresh()
 
     }, [pathname]);

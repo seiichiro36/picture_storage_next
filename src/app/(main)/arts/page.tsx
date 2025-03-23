@@ -1,5 +1,12 @@
+"use client"
+
 import { ArtworkGridServer } from "@/_components/ArtworkGridServer ";
+import { useAtom  } from "jotai";
+import { persistentEmailAtom } from "@/basic/atom";
+
 
 export default function ArtworksPage() {
-  return <ArtworkGridServer userId="sss" />;
+  const [persistentAtom, setPersistentAtom] = useAtom(persistentEmailAtom);
+
+  return <ArtworkGridServer userId={persistentAtom} />;
 }
